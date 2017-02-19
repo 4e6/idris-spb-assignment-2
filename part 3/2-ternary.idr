@@ -1,0 +1,3 @@
+-- Define and implement datatype Ternary, which is analogous to Binary n
+-- from lecture 10, covering function and translation to ternary number 
+-- representation.
