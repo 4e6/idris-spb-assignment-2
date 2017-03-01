@@ -107,6 +107,30 @@ test_isLast =
 
 -- define relation over lists which is analogous to Elem
 -- and implement its decision procedure
-data LElem : {- ??? -} Type where
+data LElem : List a -> a -> Type where
+  HereIs : LElem (value :: xs) value
+  ThereIs : (prf : (LElem xs value)) -> LElem (x :: xs) value
 
-isLElem : ?isLElem
+implementation Uninhabited (LElem [] a) where
+    uninhabited HereIs impossible
+    uninhabited (ThereIs _) impossible
+
+isLElem_contra : (f : LElem xs value -> Void) -> (contra : (x = value) -> Void) -> LElem (x :: xs) value -> Void
+isLElem_contra f contra HereIs = contra Refl
+isLElem_contra f contra (ThereIs prf) = f prf
+
+isLElem : DecEq a => (xs : List a) -> (value : a) -> Dec (LElem xs value)
+isLElem [] value = No absurd
+isLElem (x :: xs) value with (decEq x value)
+  isLElem (value :: xs) value | (Yes Refl) = Yes HereIs
+  isLElem (x :: xs) value | (No contra) with (isLElem xs value)
+    isLElem (x :: (value :: ys)) value | (No contra) | (Yes HereIs) = Yes (ThereIs HereIs)
+    isLElem (x :: (y :: ys)) value | (No contra) | (Yes (ThereIs prf)) = Yes (ThereIs (ThereIs prf))
+    isLElem (x :: xs) value | (No contra) | (No f) = No (isLElem_contra f contra)
+
+test_isLElem : Bool
+test_isLElem =
+  isNo  (isLElem [1,2,3] 0) &&
+  isYes (isLElem [1,2,3] 1) &&
+  isYes (isLElem [1,2,3] 2) &&
+  isYes (isLElem [1,2,3] 3)
