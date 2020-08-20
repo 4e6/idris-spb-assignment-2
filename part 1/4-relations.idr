@@ -11,15 +11,14 @@ vreplace (x :: xs) (There later) y with (vreplace xs later y)
   vreplace (x :: xs) (There later) y | (ys ** pf) = (x :: ys ** There pf)
 
 vswap : (v1 : Vect n1 t ** Elem x v1) -> (v2 : Vect n2 t ** Elem y v2) ->
-             ((v1':Vect n1 t ** Elem y v1'), (v2' : Vect n2 t ** Elem x v2'))
-vswap (x::xs ** Here) (y::ys ** Here) = ((y :: xs ** Here), (x :: ys ** Here))
-vswap (x::xs ** Here) (y::ys ** There later) with (vswap (x::xs ** Here) (ys ** later))
-  | ((v1' ** e1), (v2' ** e2)) = ((v1' ** e1), (y::v2' ** There e2))
-vswap (x::xs ** There later) (y::ys ** Here) with (vswap (xs ** later) (y::ys ** Here))
-  | ((v1' ** e1), (v2' ** e2)) = ((x::v1' ** There e1), (v2' ** e2))
-vswap (x::xs ** There later_x) (y::ys ** There later_y) with (vswap (xs ** later_x) (ys ** later_y))
+        ((v1' : Vect n1 t ** Elem y v1'), (v2' : Vect n2 t ** Elem x v2'))
+vswap (x :: xs ** Here) (y :: ys ** Here) = ((y :: xs ** Here), (x :: ys ** Here))
+vswap (x :: xs ** Here) (y :: ys ** There later) with (vswap (x :: xs ** Here) (ys ** later))
+  | ((v1' ** e1), (v2' ** e2)) = ((v1' ** e1), (y :: v2' ** There e2))
+vswap (x :: xs ** There later) (y :: ys ** Here) with (vswap (xs ** later) (y :: ys ** Here))
+  | ((v1' ** e1), (v2' ** e2)) = ((x :: v1' ** There e1), (v2' ** e2))
+vswap (x :: xs ** There later_x) (y :: ys ** There later_y) with (vswap (xs ** later_x) (ys ** later_y))
   | ((v1' ** e1), (v2' ** e2)) = ((x :: v1' ** There e1), (y :: v2' ** There e2))
-
 
 test_vswap_1 : Bool
 test_vswap_1 =
